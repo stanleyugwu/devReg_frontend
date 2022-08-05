@@ -9,18 +9,25 @@ const activeNetwork = () =>
     .name.toUpperCase();
 function useMetamaskConnect() {
   const [connectionInfo, setConnectionInfo] = useState<WalletConnectionInfo>();
-  const [hasMetamask, setHasMetamask] = useState(true);
+  const [hasMetamask, setHasMetamask] = useState(false);
+  // checking for metamask or connecting to wallet or
+  // checking for previous connection
+  const [processing, setProcessing] = useState(true);
 
   // Attaches listeners to metamask
   // we decalre below two listeners outside of addProviderListeners usecallBack
   // so we can cancel the listener from useEffect return
   const handleAccountChanged = (accounts: string[]) => {
+    console.log("ACCT");
+
     setConnectionInfo({
       networkName: activeNetwork(),
       address: accounts[0],
     });
   };
   const handleChainChanged = (chainId: any) => {
+    console.log("CHAIN");
+
     window.location.reload();
   };
   const addProviderListeners = useCallback(() => {
@@ -44,37 +51,50 @@ function useMetamaskConnect() {
       // connection made,lets add listeners to provider
       addProviderListeners();
     }
+    setProcessing(false);
   }, [addProviderListeners]);
 
   // Ran on mount, initialises metamask
   useEffect(() => {
     (async () => {
-      // this returns the provider, or null if it wasn't detected
-      const detectedProvider = await detectEthereumProvider();
+      try {
+        // this returns the provider, or null if it wasn't detected
+        const detectedProvider = await detectEthereumProvider({
+          mustBeMetaMask: true,
+        });
 
-      // assert metamask is installed, returns early otherwise
-      if (!detectedProvider || !(window.ethereum as any)) {
-        setHasMetamask(false);
-        return;
+        // assert metamask is installed
+        if (!!detectedProvider && !!(window.ethereum as any)) {
+          setHasMetamask(true);
+          checkPreviousWalletConnection();
+        } else setProcessing(false);
+      } catch (error) {
+        // metamask detection failure
+        setProcessing(false);
       }
-
-      checkPreviousWalletConnection();
     })();
 
     return () => {
-      (window.ethereum as any).removeListener(
-        "accountsChanged",
-        handleAccountChanged
-      );
-      (window.ethereum as any).removeListener(
-        "chainChanged",
-        handleChainChanged
-      );
+      // TODO: Properly add and remove event handlers
+      if (hasMetamask && !processing) {
+        (window.ethereum as any).removeListener(
+          "accountsChanged",
+          handleAccountChanged
+        );
+        (window.ethereum as any).removeListener(
+          "chainChanged",
+          handleChainChanged
+        );
+      }
     };
   }, []);
 
   // connection to metamask triggered by button click
   const connectWallet = React.useCallback(async () => {
+    // no metamask, no connection
+    if (!hasMetamask && !processing) return null;
+    setProcessing(true);
+
     // which is where our contract is deployed to
     try {
       // get the first account
@@ -93,13 +113,16 @@ function useMetamaskConnect() {
     } catch (error) {
       // @ts-ignore
       console.log(error.message);
+    } finally {
+      setProcessing(false);
     }
-  }, []);
+  }, [hasMetamask, processing]);
 
   return {
     walletInfo: connectionInfo,
     metamaskInstalled: hasMetamask,
     connectToMetamask: connectWallet,
+    processing,
   };
 }
 
