@@ -3,51 +3,48 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import { ethers } from "ethers";
 
 type WalletConnectionInfo = Record<"networkName" | "address", string>;
+const activeNetwork = () =>
+  ethers.providers
+    .getNetwork(parseInt((window.ethereum as any)?.networkVersion))
+    .name.toUpperCase();
 function useMetamaskConnect() {
   const [connectionInfo, setConnectionInfo] = useState<WalletConnectionInfo>();
   const [hasMetamask, setHasMetamask] = useState(true);
-  // globally provisioned ethers provider
-  const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
 
   // Attaches listeners to metamask
+  // we decalre below two listeners outside of addProviderListeners usecallBack
+  // so we can cancel the listener from useEffect return
+  const handleAccountChanged = (accounts: string[]) => {
+    setConnectionInfo({
+      networkName: activeNetwork(),
+      address: accounts[0],
+    });
+  };
+  const handleChainChanged = (chainId: any) => {
+    window.location.reload();
+  };
   const addProviderListeners = useCallback(() => {
-    window.ethereum.on("accountsChanged", async function (accounts: any) {
-      // Time to reload your interface with accounts[0]!
-      setConnectionInfo({
-        networkName: (await provider?.getNetwork())?.name.toUpperCase() || "",
-        address: accounts[0] as string,
-      });
-    });
-    
-    window.ethereum.on("chainChanged", () => {
-      window.location.reload();
-    });
-  }, [provider]);
+    (window.ethereum as any)?.on("accountsChanged", handleAccountChanged);
+    (window.ethereum as any)?.on("chainChanged", handleChainChanged);
+  }, []);
 
   // detect wallet connection
   const checkPreviousWalletConnection = React.useCallback(async () => {
     // check if account is connected. If not we fail silently and
     // allow user to manually trigger connection by clicking on "connect wallet button"
-    const accounts = await window.ethereum.request({
+    const accounts = await (window.ethereum as any).request({
       method: "eth_accounts",
     });
     if (accounts.length) {
       // connected before, lets set connection state
       setConnectionInfo({
-        networkName: (await provider?.getNetwork())?.name.toUpperCase() || "",
+        networkName: activeNetwork(),
         address: accounts[0] as string,
       });
       // connection made,lets add listeners to provider
       addProviderListeners();
     }
-  }, [provider, addProviderListeners]);
-
-  // Will listen for when provider is set so to call checker function
-  // probably after mount effect runs
-  useEffect(() => {
-    // now lets try wallet connection
-    checkPreviousWalletConnection();
-  }, [provider, checkPreviousWalletConnection]);
+  }, [addProviderListeners]);
 
   // Ran on mount, initialises metamask
   useEffect(() => {
@@ -56,22 +53,23 @@ function useMetamaskConnect() {
       const detectedProvider = await detectEthereumProvider();
 
       // assert metamask is installed, returns early otherwise
-      if (!detectedProvider || !window.ethereum) {
+      if (!detectedProvider || !(window.ethereum as any)) {
         setHasMetamask(false);
         return;
       }
 
-      // since metamask is installed, let's create global provider
-      setProvider(
-        new ethers.providers.Web3Provider(
-          detectedProvider as ethers.providers.ExternalProvider
-        )
-      );
+      checkPreviousWalletConnection();
     })();
 
     return () => {
-      provider?.removeAllListeners("accountsChanged");
-      provider?.removeAllListeners("chainChanged");
+      (window.ethereum as any).removeListener(
+        "accountsChanged",
+        handleAccountChanged
+      );
+      (window.ethereum as any).removeListener(
+        "chainChanged",
+        handleChainChanged
+      );
     };
   }, []);
 
@@ -80,14 +78,14 @@ function useMetamaskConnect() {
     // which is where our contract is deployed to
     try {
       // get the first account
-      const accounts = await window.ethereum.request({
+      const accounts = await (window.ethereum as any).request({
         method: "eth_requestAccounts",
       });
 
       // set the detected connection
       const firstAcct = accounts[0] as string;
       setConnectionInfo({
-        networkName: (await provider?.getNetwork())?.name.toUpperCase() || "",
+        networkName: activeNetwork(),
         address: firstAcct,
       });
 
@@ -96,12 +94,11 @@ function useMetamaskConnect() {
       // @ts-ignore
       console.log(error.message);
     }
-  }, [provider]);
+  }, []);
 
   return {
     walletInfo: connectionInfo,
     metamaskInstalled: hasMetamask,
-    ethersProvider: provider,
     connectToMetamask: connectWallet,
   };
 }
