@@ -58,8 +58,7 @@ const Header = () => {
           <MetamaskWarning closeMenu={() => setMetamaskWarningVisible(false)} />
         )}
         <h1
-          style={{ fontFamily: "cursive" }}
-          className="text-white text-4xl font-semibold"
+          className="text-white font-[cursive] text-center text-4xl font-semibold"
         >
           {"<DevReg/>"}
         </h1>
@@ -74,12 +73,12 @@ const Header = () => {
         <div className="flex flex-row justify-center flex-wrap items-center">
           <button
             onClick={handleRegister}
-            className="p-4 text-sm bg-lime-500 text-white rounded-md px-10 font-semibold my-6 hover:bg-lime-600"
+            className="button text-sm my-2 lg:my-6 hover:bg-lime-600"
           >
             JOIN THE TALENTS <span className="animate-pulse">❤</span>
           </button>
           {walletInfo?.address ? (
-            <div className="p-1 px-6 ml-6 inline-block self-center rounded-3xl border-2 border-lime-500">
+            <div className="p-1 px-6 lg:ml-6 inline-block self-center rounded-3xl border-2 border-lime-500">
               <p className="text-sm text-lime-500 font-semibold justify-center flex flex-row items-center self-center">
                 <img src={anchorImage} alt="🔹" className="mr-1" />
                 {walletInfo.networkName}
