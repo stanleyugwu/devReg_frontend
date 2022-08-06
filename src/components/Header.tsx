@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useMetamaskConnect from "../hooks/useMetamaskConnect";
 import formatAddress from "../utils/formatWalletAddress";
 import anchorImage from "../images/anchor.svg";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export type MetamaskWarningProps = {
   closeMenu: () => void;
@@ -37,7 +37,11 @@ const Header = () => {
   const { metamaskInstalled, connectToMetamask, walletInfo, processing } =
     useMetamaskConnect();
   const [metamaskWarningVisible, setMetamaskWarningVisible] = useState(false);
+  
+  // react-router
   const navigate = useNavigate();
+  const {pathname} = useLocation();
+  
 
   // handles when user clicks on register
   const handleRegister = () => {
@@ -71,12 +75,21 @@ const Header = () => {
         <div className="text-white text-2xl animate-pulse p-6">❤ ❤ ❤</div>
       ) : (
         <div className="flex flex-row justify-center flex-wrap items-center">
-          <button
-            onClick={handleRegister}
-            className="button text-sm my-2 lg:my-6 hover:bg-lime-600"
-          >
-            JOIN THE TALENTS <span className="animate-pulse">❤</span>
-          </button>
+          {
+            pathname === "/" ? (<button
+              onClick={handleRegister}
+              className="button text-sm my-2 lg:my-6 hover:bg-lime-600"
+            >
+              <span className="animate-pulse">❤</span> JOIN THE TALENTS 
+            </button>) : (
+              <button
+              onClick={() => navigate("/")}
+              className="button text-sm my-2 lg:my-6 hover:bg-lime-600"
+            >
+              <span className="animate-pulse">🏠</span> GO HOME 
+            </button>
+            )
+          }
           {walletInfo?.address ? (
             <div className="p-1 px-6 lg:ml-6 inline-block self-center rounded-3xl border-2 border-lime-500">
               <p className="text-sm text-lime-500 font-semibold justify-center flex flex-row items-center self-center">
@@ -88,7 +101,7 @@ const Header = () => {
           ) : (
             <button
               onClick={handleConnectToMetamask}
-              className="p-4 text-sm bg-orange-500 text-white rounded-md lg:ml-6 px-10 font-semibold hover:bg-orange-600"
+              className="button text-sm !bg-orange-500 lg:ml-6 hover:!bg-orange-600"
             >
               CONNECT WALLET <span className="animate-pulse">🔗</span>
             </button>
