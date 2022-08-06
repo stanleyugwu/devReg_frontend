@@ -35,20 +35,34 @@ function useMetamaskConnect() {
     (window.ethereum as any)?.on("chainChanged", handleChainChanged);
   }, []);
 
+  const clearMetamaskListeners = () => {
+    // TODO: Properly add and remove event handlers
+    if (hasMetamask && !processing) {
+      (window.ethereum as any).removeListener(
+        "accountsChanged",
+        handleAccountChanged
+      );
+      (window.ethereum as any).removeListener(
+        "chainChanged",
+        handleChainChanged
+      );
+    }
+  }
   // detect wallet connection
   const checkPreviousWalletConnection = React.useCallback(async () => {
-    // check if account is connected. If not we fail silently and
+    // check if account is connected and on goerli network. If not we fail silently and
     // allow user to manually trigger connection by clicking on "connect wallet button"
     const accounts = await (window.ethereum as any).request({
       method: "eth_accounts",
     });
-    if (accounts.length) {
+    if (accounts.length && (window.ethereum as any).networkVersion === "5") {
       // connected before, lets set connection state
       setConnectionInfo({
-        networkName: activeNetwork(),
+        networkName: "GOERLI",
         address: accounts[0] as string,
       });
       // connection made,lets add listeners to provider
+      clearMetamaskListeners();
       addProviderListeners();
     }
     setProcessing(false);
@@ -74,19 +88,7 @@ function useMetamaskConnect() {
       }
     })();
 
-    return () => {
-      // TODO: Properly add and remove event handlers
-      if (hasMetamask && !processing) {
-        (window.ethereum as any).removeListener(
-          "accountsChanged",
-          handleAccountChanged
-        );
-        (window.ethereum as any).removeListener(
-          "chainChanged",
-          handleChainChanged
-        );
-      }
-    };
+    return clearMetamaskListeners;
   }, []);
 
   // connection to metamask triggered by button click
@@ -97,6 +99,14 @@ function useMetamaskConnect() {
 
     // which is where our contract is deployed to
     try {
+      // request connection to goerli. It will throw if user refuses to switch
+      if((window.ethereum as any).networkVersion !== "5"){
+        await (window.ethereum as any).request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x5" }]
+        })
+      }
+
       // get the first account
       const accounts = await (window.ethereum as any).request({
         method: "eth_requestAccounts",
@@ -105,9 +115,13 @@ function useMetamaskConnect() {
       // set the detected connection
       const firstAcct = accounts[0] as string;
       setConnectionInfo({
-        networkName: activeNetwork(),
+        networkName: "GOERLI",
         address: firstAcct,
       });
+
+      // connection made,lets add listeners to provider
+      clearMetamaskListeners();
+      addProviderListeners();
 
       // add listeners
     } catch (error) {
@@ -116,7 +130,7 @@ function useMetamaskConnect() {
     } finally {
       setProcessing(false);
     }
-  }, [hasMetamask, processing]);
+  }, [hasMetamask, processing, addProviderListeners]);
 
   return {
     walletInfo: connectionInfo,
