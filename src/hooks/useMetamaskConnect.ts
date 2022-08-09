@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { ethers } from "ethers";
 
@@ -13,6 +13,7 @@ function useMetamaskConnect() {
   // checking for metamask or connecting to wallet or
   // checking for previous connection
   const [processing, setProcessing] = useState(true);
+  const signer = useRef<ethers.Signer>();
 
   // Attaches listeners to metamask
   // we decalre below two listeners outside of addProviderListeners usecallBack
@@ -50,14 +51,20 @@ function useMetamaskConnect() {
   const checkPreviousWalletConnection = React.useCallback(async () => {
     // check if account is connected and on goerli network. If not we fail silently and
     // allow user to manually trigger connection by clicking on "connect wallet button"
-    const accounts = await (window.ethereum as any).request({
+    const accounts: string[] = await (window.ethereum as any).request({
       method: "eth_accounts",
     });
     if (accounts.length && (window.ethereum as any).networkVersion === "5") {
       // connected before, lets set connection state
+      const metamaskProvider = new ethers.providers.Web3Provider(
+        // @ts-ignore
+        window.ethereum,
+        5
+      );
+      signer.current = metamaskProvider.getSigner(accounts[0]);
       setConnectionInfo({
         networkName: "GOERLI",
-        address: accounts[0] as string,
+        address: accounts[0],
       });
       // connection made,lets add listeners to provider
       clearMetamaskListeners();
@@ -112,6 +119,12 @@ function useMetamaskConnect() {
 
       // set the detected connection
       const firstAcct = accounts[0] as string;
+      const metamaskProvider = new ethers.providers.Web3Provider(
+        // @ts-ignore
+        window.ethereum,
+        5
+      );
+      signer.current = metamaskProvider.getSigner(accounts[0]);
       setConnectionInfo({
         networkName: "GOERLI",
         address: firstAcct,
@@ -134,6 +147,7 @@ function useMetamaskConnect() {
     walletInfo: connectionInfo,
     metamaskInstalled: hasMetamask,
     connectToMetamask: connectWallet,
+    signer: signer.current,
     processing,
   };
 }
