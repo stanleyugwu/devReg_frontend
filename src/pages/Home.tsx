@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import "../App.css";
 import Developer from "../components/Developer";
 import { ethers } from "ethers";
-import DevRegAbi from "../abis/DevReg.json";
-import contract from "../constants/contract";
 import type { DeveloperInfo } from "../types";
+import devRegInterface from "../utils/devRegInterface";
 
 const StaticLoader = (
   <div className="flex flex-col text-center items-center justify-center mt-10">
@@ -31,23 +30,13 @@ const Home = () => {
         5
       );
 
-      // connected to goerli provider
-      // lets initialise our contract and after that, every call to contract methods will be
-      // made via the contract's provider i.e `goerliProvider`
-      let contractAbi: ethers.ContractInterface = DevRegAbi;
-      const myContract = new ethers.Contract(
-        contract.CONTRACT_ADDRESS,
-        contractAbi,
-        goerliProvider
-      );
-
       // get all registered devs
-      const devs = await myContract.getAllDevs();
-      setDevelopers(devs);
+      const devs = await devRegInterface(goerliProvider).call("getAllDevs");
+      setDevelopers(devs.value);
     } catch (error: any) {
-      console.log(error.message);
+      console.log("ERROR FETCHING DEVS");
+      console.log(error.reason);
       setDevelopers(false);
-      console.log("ERROR CONNECTING");
     }
   };
 
