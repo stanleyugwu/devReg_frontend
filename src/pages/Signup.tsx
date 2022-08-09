@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ethers } from "ethers";
@@ -54,12 +54,21 @@ const Signup = () => {
   // user is done filling form
   const { connectToMetamask, walletInfo, signer } = useMetamaskConnect();
   const navigate = useNavigate();
+  const [requestTakingLong, setRequestTakingLong] = useState(false);
 
   // handle submission
+  let timeoutId: NodeJS.Timeout;
   const onSubmit = async (values: SignupFormFields) => {
     // assert wallet connection
     if (!walletInfo?.address || activeNetwork() !== "GOERLI")
       return connectToMetamask();
+
+    // indicate that the request is taking long after 20 seconds
+    requestTakingLong && setRequestTakingLong(false);
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      setRequestTakingLong(true);
+    }, 20_000);
 
     // since metamask can't sign transaction without broadcasting it through their node,
     // we'll use their goerli node to send transaction
@@ -80,16 +89,16 @@ const Signup = () => {
       );
 
       // registeration successful
-      Swal({
+      await Swal({
         icon: "success",
         timer: 2000,
         title: "Success",
         text: "Registeration successful. You have been identified 💪",
-      }).then(() => {
-        navigate("/", { replace: true });
       });
+      navigate("/", { replace: true });
     } catch (err: any) {
       const error = err as EthersError;
+      setRequestTakingLong(false);
       console.log({ error });
       Swal({
         icon: "error",
@@ -262,7 +271,11 @@ const Signup = () => {
           className="button disabled:hover:!bg-dark hover:!bg-opacity-70 !bg-dark w-11/12"
         >
           {isSubmitting ? (
-            <span className="animate-pulse">Processing ❤ ❤</span>
+            <span className="animate-pulse">
+              {requestTakingLong
+                ? "Processing...Check your internet connection"
+                : "Processing ❤ ❤"}
+            </span>
           ) : (
             "GET IDENTIFIED 💪"
           )}
