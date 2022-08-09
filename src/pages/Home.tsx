@@ -12,6 +12,12 @@ const StaticLoader = (
   </div>
 );
 
+/**
+ * Filters array of fetched developers, removing empty datasets
+ */
+export const filterFetchedDevs = (devs: DeveloperInfo[]) =>
+  devs.filter((dev) => dev.username.length);
+
 const Home = () => {
   // one state variable for three states:
   // undefined = loading, [] = no devs, false = error, [data] = fetched data
@@ -32,7 +38,7 @@ const Home = () => {
 
       // get all registered devs
       const devs = await devRegInterface(goerliProvider).call("getAllDevs");
-      setDevelopers(devs.value);
+      setDevelopers(filterFetchedDevs(devs.value));
     } catch (error: any) {
       console.log("ERROR FETCHING DEVS");
       console.log(error.reason);
