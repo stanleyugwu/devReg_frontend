@@ -11,6 +11,12 @@
 .button {
   @apply disabled:bg-opacity-80 p-4 px-12 shadow-md hover:bg-lime-600 bg-lime-500 text-white font-semibold rounded-lg;
 }
+.swal-button {
+  @apply p-2 px-8 bg-dark text-white font-semibold;
+}
+.swal-button:hover {
+  @apply p-2 px-8 !bg-dark text-lime-500 font-semibold;
+}
 
 body {
   margin: 0;
