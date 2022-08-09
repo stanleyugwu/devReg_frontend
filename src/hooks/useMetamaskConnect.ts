@@ -3,7 +3,7 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import { ethers } from "ethers";
 
 type WalletConnectionInfo = Record<"networkName" | "address", string>;
-const activeNetwork = () =>
+export const activeNetwork = () =>
   ethers.providers
     .getNetwork(parseInt((window.ethereum as any)?.networkVersion))
     .name.toUpperCase();
@@ -26,8 +26,6 @@ function useMetamaskConnect() {
     });
   };
   const handleChainChanged = (chainId: any) => {
-    console.log("CHAIN");
-
     window.location.reload();
   };
   const addProviderListeners = useCallback(() => {
@@ -35,7 +33,7 @@ function useMetamaskConnect() {
     (window.ethereum as any)?.on("chainChanged", handleChainChanged);
   }, []);
 
-  const clearMetamaskListeners = () => {
+  const clearMetamaskListeners = useCallback(() => {
     // TODO: Properly add and remove event handlers
     if (hasMetamask && !processing) {
       (window.ethereum as any).removeListener(
@@ -47,7 +45,7 @@ function useMetamaskConnect() {
         handleChainChanged
       );
     }
-  }
+  }, []);
   // detect wallet connection
   const checkPreviousWalletConnection = React.useCallback(async () => {
     // check if account is connected and on goerli network. If not we fail silently and
@@ -66,7 +64,7 @@ function useMetamaskConnect() {
       addProviderListeners();
     }
     setProcessing(false);
-  }, [addProviderListeners]);
+  }, [addProviderListeners, clearMetamaskListeners]);
 
   // Ran on mount, initialises metamask
   useEffect(() => {
@@ -100,11 +98,11 @@ function useMetamaskConnect() {
     // which is where our contract is deployed to
     try {
       // request connection to goerli. It will throw if user refuses to switch
-      if((window.ethereum as any).networkVersion !== "5"){
+      if ((window.ethereum as any).networkVersion !== "5") {
         await (window.ethereum as any).request({
           method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x5" }]
-        })
+          params: [{ chainId: "0x5" }],
+        });
       }
 
       // get the first account
@@ -130,7 +128,7 @@ function useMetamaskConnect() {
     } finally {
       setProcessing(false);
     }
-  }, [hasMetamask, processing, addProviderListeners]);
+  }, [hasMetamask, processing, addProviderListeners, clearMetamaskListeners]);
 
   return {
     walletInfo: connectionInfo,
