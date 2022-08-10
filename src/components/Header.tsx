@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useMetamaskConnect from "../hooks/useMetamaskConnect";
 import formatAddress from "../utils/formatWalletAddress";
 import anchorImage from "../images/anchor.svg";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export type MetamaskWarningProps = {
   closeMenu: () => void;
@@ -37,17 +37,16 @@ const Header = () => {
   const { metamaskInstalled, connectToMetamask, walletInfo, processing } =
     useMetamaskConnect();
   const [metamaskWarningVisible, setMetamaskWarningVisible] = useState(false);
-  
+
   // react-router
   const navigate = useNavigate();
-  const {pathname} = useLocation();
-  
+  const { pathname } = useLocation();
 
   // handles when user clicks on register
   const handleRegister = () => {
     if (!metamaskInstalled) return setMetamaskWarningVisible(true);
     if (!walletInfo?.address) return connectToMetamask();
-    navigate("/signup", { replace: true });
+    navigate("/signup");
   };
 
   // handles connection to metamask
@@ -61,9 +60,7 @@ const Header = () => {
         {metamaskWarningVisible && (
           <MetamaskWarning closeMenu={() => setMetamaskWarningVisible(false)} />
         )}
-        <h1
-          className="text-white font-[cursive] text-center text-4xl font-semibold"
-        >
+        <h1 className="text-white font-[cursive] text-center text-4xl font-semibold">
           {"<DevReg/>"}
         </h1>
         <p className="text-white font-semibold mb-4">
@@ -75,21 +72,21 @@ const Header = () => {
         <div className="text-white text-2xl animate-pulse p-6">❤ ❤ ❤</div>
       ) : (
         <div className="flex flex-row justify-center flex-wrap items-center">
-          {
-            pathname === "/" ? (<button
+          {pathname === "/" ? (
+            <button
               onClick={handleRegister}
               className="button text-sm my-2 lg:my-6 hover:bg-lime-600"
             >
-              <span className="animate-pulse">❤</span> JOIN THE TALENTS 
-            </button>) : (
-              <button
-              onClick={() => navigate("/")}
+              <span className="animate-pulse">❤</span> JOIN THE TALENTS
+            </button>
+          ) : (
+            <Link
+              to={"/"}
               className="button text-sm my-2 lg:my-6 hover:bg-lime-600"
             >
-              <span className="animate-pulse">🏠</span> GO HOME 
-            </button>
-            )
-          }
+              <span className="animate-pulse">🏠</span> GO HOME
+            </Link>
+          )}
           {walletInfo?.address ? (
             <div className="p-1 px-6 lg:ml-6 inline-block self-center rounded-3xl border-2 border-lime-500">
               <p className="text-sm text-lime-500 font-semibold justify-center flex flex-row items-center self-center">
