@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "../App.css";
 import Developer from "../components/Developer";
-import { ethers } from "ethers";
 import type { DeveloperInfo } from "../types";
-import devRegInterface from "../utils/devRegInterface";
+import useAppStore from "../store";
 
 const StaticLoader = (
   <div className="flex flex-col text-center items-center justify-center mt-10">
@@ -19,35 +18,11 @@ export const filterFetchedDevs = (devs: DeveloperInfo[]) =>
   devs.filter((dev) => dev.username.length);
 
 const Home = () => {
-  // one state variable for three states:
-  // undefined = loading, [] = no devs, false = error, [data] = fetched data
-  const [developers, setDevelopers] = useState<
-    DeveloperInfo[] | undefined | false
-  >(undefined);
-
-  const fetchDevs = async () => {
-    developers !== undefined && setDevelopers(undefined);
-    // we wrap everything in try catch so to be able to catch connection error
-    try {
-      // lets create a fresh goerli provider for making calls to blockchain
-      // we dont need a signer or `from address` since this function just sends a message call to our node
-      const goerliProvider = new ethers.providers.JsonRpcProvider(
-        "https://rpc.goerli.mudit.blog/",
-        5
-      );
-
-      // get all registered devs
-      const devs = await devRegInterface(goerliProvider).call("getAllDevs");
-      setDevelopers(filterFetchedDevs(devs.value));
-    } catch (error: any) {
-      console.log("ERROR FETCHING DEVS");
-      console.log(error.reason);
-      setDevelopers(false);
-    }
-  };
+  const developers = useAppStore((state) => state.developers);
+  const fetchDevs = useAppStore((state) => state.fetchDevelopers);
 
   useEffect(() => {
-    fetchDevs();
+    developers === undefined && fetchDevs();
   }, []);
 
   return (

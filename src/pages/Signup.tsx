@@ -9,6 +9,7 @@ import useMetamaskConnect, { activeNetwork } from "../hooks/useMetamaskConnect";
 import devRegInterface from "../utils/devRegInterface";
 import Swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
+import useAppStore from "../store";
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string()
@@ -55,6 +56,7 @@ const Signup = () => {
   const { connectToMetamask, walletInfo, signer } = useMetamaskConnect();
   const navigate = useNavigate();
   const [requestTakingLong, setRequestTakingLong] = useState(false);
+  const fetchDevs = useAppStore().fetchDevelopers;
 
   // handle submission
   let timeoutId: NodeJS.Timeout;
@@ -95,6 +97,7 @@ const Signup = () => {
         title: "Success",
         text: "Registeration successful. You have been identified 💪",
       });
+      fetchDevs();
       navigate("/", { replace: true });
     } catch (err: any) {
       const error = err as EthersError;
