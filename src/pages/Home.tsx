@@ -30,15 +30,15 @@ const Home = () => {
           {developers === undefined ? (
             StaticLoader
           ) : developers === false ? (
-            <div className="mt-10">
-              <h4 className="text-md text-xl font-semibold">
+            <div className="mt-10 text-center">
+              <h4 className="text-md text-xl text-center font-semibold">
                 An error occurred.
                 <br /> We couldn't connect to our backend. Make sure you have
                 internet access and try again
               </h4>
               <button
                 onClick={fetchDevs}
-                className="p-2 px-8 mt-4 hover:bg-lime-600 bg-lime-500 text-white font-semibold rounded-lg"
+                className="p-3 px-8 mt-4 mx-auto hover:bg-lime-600 bg-lime-500 text-white font-semibold rounded-lg"
               >
                 Try again
               </button>
