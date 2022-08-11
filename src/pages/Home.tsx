@@ -18,16 +18,14 @@ export const filterFetchedDevs = (devs: DeveloperInfo[]) =>
   devs.filter((dev) => dev.username.length);
 
 const Home = () => {
-  const developers = useAppStore((state) => state.developers);
-  const fetchDevs = useAppStore((state) => state.fetchDevelopers);
+  const [developers, fetchDevs] = useAppStore((state) => [state.developers, state.fetchDevelopers]);
 
   useEffect(() => {
     developers === undefined && fetchDevs();
   }, []);
 
   return (
-    <div className="App h-full w-full">
-      <main>
+      <main className="h-full w-full">
         <div className="flex flex-row flex-wrap justify-around pt-6">
           {developers === undefined ? (
             StaticLoader
@@ -64,7 +62,6 @@ const Home = () => {
           )}
         </div>
       </main>
-    </div>
   );
 };
 

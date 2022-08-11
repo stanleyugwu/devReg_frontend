@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 /**
  * Type shims for `window.ethereum`
  */
@@ -28,13 +29,13 @@ export type DeveloperInfo = {
   // Developer's short bio
   bio: string;
   // Developer's reputation points
-  reputationPoints: number;
+  reputationPoints: ethers.BigNumber;
   // Whether the developer is open to jobs or employment
   openToWork: boolean;
   // Developer's Github username
   githubUsername: string;
   // Registeration date
-  regDate: number;
+  regDate: ethers.BigNumber;
   // Link to dev's picture to use as profile pic
   devPicUrl: string;
   // Developer's wallet address
