@@ -38,15 +38,7 @@ const devRegInterface = (signer: ethers.Signer | ethers.providers.Provider) => {
      * It will be used for invoking the contract functions but it will also handle
      * and normalise errors and returned values
      */
-    async call(
-      functionName: string,
-      /**
-       * Below function wil be called when the transaction has been broadcasted to the network
-       * and the receipt is being fetched
-       */
-      onTxBroadcast?: (tx: ethers.ContractTransaction) => void,
-      ...args: any[]
-    ): Promise<CallReturn> {
+    async call(functionName: string, ...args: any[]): Promise<CallReturn> {
       try {
         await devReg.callStatic[functionName](...args);
         // mock call didnt fail, let's now execute function as tx
@@ -57,8 +49,6 @@ const devRegInterface = (signer: ethers.Signer | ethers.providers.Provider) => {
         // if the function called is read-only, tx will have the returned value of that function
         // if it's not read-only, tx will be a transaction object. We check for these scenarios
         if (isTransaction(tx)) {
-          onTxBroadcast?.(tx);
-
           // tx is transaction, lets wait for the receipt
           const receipt: ethers.ContractReceipt = await tx.wait();
           return { isReceipt: true, value: receipt };

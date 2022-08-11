@@ -81,7 +81,6 @@ const Signup = () => {
         values;
       await devRegInterface(signer!).call(
         "register",
-        undefined,
         username,
         title,
         bio,
