@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import formatAddress from "../utils/formatWalletAddress";
-import anchorImage from "../images/anchor.svg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useWalletStore from "../store/wallet";
 import connectMetamask from "../utils/connectMetamask";
+import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
+import { faCoins, faGlobe } from "@fortawesome/free-solid-svg-icons";
 
 export type MetamaskWarningProps = {
   closeMenu: () => void;
@@ -35,8 +36,14 @@ const MetamaskWarning = ({ closeMenu }: MetamaskWarningProps) => (
 );
 
 const Header = () => {
-  const { hasMetamask, walletAddress, processing, networkName, initialiser } =
-    useWalletStore();
+  const {
+    hasMetamask,
+    walletAddress,
+    processing,
+    networkName,
+    initialiser,
+    balance,
+  } = useWalletStore();
   const [metamaskWarningVisible, setMetamaskWarningVisible] = useState(false);
 
   // react-router
@@ -98,10 +105,18 @@ const Header = () => {
           {walletAddress ? (
             <div className="p-1 px-6 lg:ml-6 inline-block self-center rounded-3xl border-2 border-lime-500">
               <p className="text-sm text-lime-500 font-semibold justify-center flex flex-row items-center self-center">
-                <img src={anchorImage} alt="🔹" className="mr-1" />
-                {networkName}
+                <Icon icon={faGlobe} className="mr-1" />
+                {networkName!}
+                {balance && (
+                  <p className="ml-1 text-white font-mono">
+                    {" "}
+                    - <Icon icon={faCoins} /> {balance} ETH
+                  </p>
+                )}
               </p>
-              <p className="text-white">{formatAddress(walletAddress)}</p>
+              <p className="text-white text-center font-mono">
+                {formatAddress(walletAddress)}
+              </p>
             </div>
           ) : (
             <button
