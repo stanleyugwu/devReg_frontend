@@ -2,6 +2,20 @@ import { ethers } from "ethers";
 import DevRegAbi from "../abis/DevReg.json";
 import contract from "../constants/contract";
 
+/** Parameter type of call function */
+export type CallArgs = {
+  /** Name of the contract function to call */
+  functionName: string;
+  /** Arguments to be supplied to the function to be called */
+  functionArgs?: (any | ethers.CallOverrides)[];
+  /**
+   * Determines whether to skip calling the function via `staticcall` first,
+   *  which would helps check if the function will fail when called.
+   */
+  skipStaticCall?: boolean;
+};
+
+/** Return type of call function */
 export type CallReturn = {
   /**
    * Determines whether the call returned a receipt (for transaction), or value (message call)
@@ -38,13 +52,28 @@ const devRegInterface = (signer: ethers.Signer | ethers.providers.Provider) => {
      * It will be used for invoking the contract functions but it will also handle
      * and normalise errors and returned values
      */
-    async call(functionName: string, ...args: any[]): Promise<CallReturn> {
+    async call({
+      functionName,
+      functionArgs = undefined,
+      skipStaticCall = false,
+    }: CallArgs): Promise<CallReturn> {
       try {
-        await devReg.callStatic[functionName](...args);
+        if (!skipStaticCall) {
+          if (functionArgs) {
+            // function args were passed
+            await devReg.callStatic[functionName](...functionArgs);
+          }
+          await devReg.callStatic[functionName]();
+        }
+
         // mock call didnt fail, let's now execute function as tx
-        const tx: ethers.ContractTransaction = await devReg[functionName](
-          ...args
-        );
+        let tx: ethers.ContractTransaction;
+        if (functionArgs) {
+          // function args were passed
+          tx = await devReg[functionName](...functionArgs);
+        } else {
+          tx = await devReg[functionName]();
+        }
 
         // if the function called is read-only, tx will have the returned value of that function
         // if it's not read-only, tx will be a transaction object. We check for these scenarios
