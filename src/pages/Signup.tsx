@@ -5,11 +5,12 @@ import { ethers } from "ethers";
 import arrow from "../images/arrow.svg";
 import laptopImg from "../images/laptop.png";
 import { SignupFormFields } from "../types";
-import useMetamaskConnect, { activeNetwork } from "../hooks/useMetamaskConnect";
 import devRegInterface from "../utils/devRegInterface";
 import Swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
 import useAppStore from "../store";
+import useWalletStore from "../store/wallet";
+import connectMetamask from "../utils/connectMetamask";
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string()
@@ -53,7 +54,7 @@ const ErrorField = ({ error }: { error?: string }) =>
 const Signup = () => {
   // this hook takes time to determine if user is connected, but it'd be done before
   // user is done filling form
-  const { connectToMetamask, walletInfo, signer } = useMetamaskConnect();
+  const {signer,walletAddress} = useWalletStore();
   const navigate = useNavigate();
   const [requestTakingLong, setRequestTakingLong] = useState(false);
   const fetchDevs = useAppStore().fetchDevelopers;
@@ -62,8 +63,8 @@ const Signup = () => {
   let timeoutId: NodeJS.Timeout;
   const onSubmit = async (values: SignupFormFields) => {
     // assert wallet connection
-    if (!walletInfo?.address || activeNetwork() !== "GOERLI")
-      return connectToMetamask();
+    if (!walletAddress)
+      return connectMetamask();
 
     // indicate that the request is taking long after 20 seconds
     requestTakingLong && setRequestTakingLong(false);

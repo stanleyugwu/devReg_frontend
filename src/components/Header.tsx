@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import useMetamaskConnect from "../hooks/useMetamaskConnect";
+import React, { useEffect, useState } from "react";
 import formatAddress from "../utils/formatWalletAddress";
 import anchorImage from "../images/anchor.svg";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import useWalletStore from "../store/wallet";
+import connectMetamask from "../utils/connectMetamask";
 
 export type MetamaskWarningProps = {
   closeMenu: () => void;
@@ -34,8 +35,8 @@ const MetamaskWarning = ({ closeMenu }: MetamaskWarningProps) => (
 );
 
 const Header = () => {
-  const { metamaskInstalled, connectToMetamask, walletInfo, processing } =
-    useMetamaskConnect();
+  const { hasMetamask, walletAddress, processing, networkName, initialiser } =
+    useWalletStore();
   const [metamaskWarningVisible, setMetamaskWarningVisible] = useState(false);
 
   // react-router
@@ -44,16 +45,23 @@ const Header = () => {
 
   // handles when user clicks on register
   const handleRegister = () => {
-    if (!metamaskInstalled) return setMetamaskWarningVisible(true);
-    if (!walletInfo?.address) return connectToMetamask();
+    if (!hasMetamask) return setMetamaskWarningVisible(true);
+    if (!walletAddress) return connectMetamask();
     navigate("/signup");
   };
 
   // handles connection to metamask
   const handleConnectToMetamask = () => {
-    if (metamaskInstalled) return connectToMetamask();
-    return setMetamaskWarningVisible(true);
+    return hasMetamask ? connectMetamask() : setMetamaskWarningVisible(true);
   };
+
+  // we decide to run metamask store initialiser action
+  // here on mount but we can also run it anywhere
+  useEffect(() => {
+    initialiser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <header className="p-2 bg-dark flex flex-row justify-around items-center flex-wrap">
       <div>
@@ -87,13 +95,13 @@ const Header = () => {
               <span className="animate-pulse">🏠</span> GO HOME
             </Link>
           )}
-          {walletInfo?.address ? (
+          {walletAddress ? (
             <div className="p-1 px-6 lg:ml-6 inline-block self-center rounded-3xl border-2 border-lime-500">
               <p className="text-sm text-lime-500 font-semibold justify-center flex flex-row items-center self-center">
                 <img src={anchorImage} alt="🔹" className="mr-1" />
-                {walletInfo.networkName}
+                {networkName}
               </p>
-              <p className="text-white">{formatAddress(walletInfo.address)}</p>
+              <p className="text-white">{formatAddress(walletAddress)}</p>
             </div>
           ) : (
             <button
