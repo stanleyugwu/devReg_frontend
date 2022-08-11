@@ -62,8 +62,7 @@ const devRegInterface = (signer: ethers.Signer | ethers.providers.Provider) => {
           if (functionArgs) {
             // function args were passed
             await devReg.callStatic[functionName](...functionArgs);
-          }
-          await devReg.callStatic[functionName]();
+          } else await devReg.callStatic[functionName]();
         }
 
         // mock call didnt fail, let's now execute function as tx
