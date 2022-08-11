@@ -4,6 +4,7 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import { CustomWindow } from "../types";
 import getWalletBalance from "../utils/getWalletBalance";
 import checkPreviousWalletConnection from "../utils/checkPreviousWalletConnection";
+import createSignerFromAddress from "../utils/createSignerFromAddress";
 
 //extend window
 declare let window: CustomWindow;
@@ -76,7 +77,11 @@ const useWalletStore = create<WalletStore>((set, get) => ({
           // is connected to our app, so to prevent firing handlers when wallet isn't connected
           window.ethereum.on("accountsChanged", (accounts: string[]) => {
             if (get().walletAddress) {
-              set({ walletAddress: accounts[0], balance: undefined });
+              set({
+                walletAddress: accounts[0],
+                balance: undefined,
+                signer: createSignerFromAddress(accounts[0]),
+              });
               getWalletBalance(accounts[0]);
             }
           });

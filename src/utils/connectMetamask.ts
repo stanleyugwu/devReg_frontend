@@ -2,6 +2,7 @@ import useWalletStore from "../store/wallet";
 import { CustomWindow } from "../types";
 import { ethers } from "ethers";
 import getWalletBalance from "./getWalletBalance";
+import createSignerFromAddress from "./createSignerFromAddress";
 
 //extend window
 declare let window: CustomWindow;
@@ -50,7 +51,11 @@ const connectMetamask = async () => {
     // connection made,lets add listeners to metamask
     window.ethereum.on("accountsChanged", (accounts: string[]) => {
       if (walletAddress) {
-        updateStore({ walletAddress: accounts[0], balance: undefined });
+        updateStore({
+          walletAddress: accounts[0],
+          balance: undefined,
+          signer: createSignerFromAddress(accounts[0]),
+        });
         getWalletBalance(accounts[0]);
       }
     });

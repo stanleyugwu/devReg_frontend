@@ -1,5 +1,5 @@
-import { CustomWindow } from "../types";
-import { ethers } from "ethers";
+import createSignerFromAddress from "./createSignerFromAddress";
+import type { CustomWindow } from "../types";
 
 //extend window
 declare let window: CustomWindow;
@@ -14,13 +14,8 @@ const checkPreviousWalletConnection = async () => {
     method: "eth_accounts",
   });
   if (accounts.length && window.ethereum.networkVersion === "5") {
-    // connected before, lets set connection state
-    const metamaskProvider = new ethers.providers.Web3Provider(
-      window.ethereum,
-      5
-    );
     return {
-      signer: metamaskProvider.getSigner(accounts[0]),
+      signer: createSignerFromAddress(accounts[0]),
       networkName: "GOERLI",
       walletAddress: accounts[0],
     };
