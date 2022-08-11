@@ -18,10 +18,11 @@ const getWalletBalance = async (address: string) => {
   );
 
   try {
-    const balInEth = ethers.utils.formatEther(
-      await metamaskProvider.getBalance(address)
-    );
-    updateStore({ balance: balInEth });
+    const bigNum = await metamaskProvider.getBalance(address);
+    const balInEth = ethers.utils.formatEther(bigNum);
+    updateStore({
+      balance: balInEth.length > 6 ? balInEth.slice(0, 6) + "..." : balInEth,
+    });
   } catch (error) {
     console.log("BALANCE RETRIEVAL FAILED");
     // we do nothing
