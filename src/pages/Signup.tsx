@@ -54,7 +54,7 @@ const ErrorField = ({ error }: { error?: string }) =>
 const Signup = () => {
   // this hook takes time to determine if user is connected, but it'd be done before
   // user is done filling form
-  const {signer,walletAddress} = useWalletStore();
+  const { signer, walletAddress } = useWalletStore();
   const navigate = useNavigate();
   const [requestTakingLong, setRequestTakingLong] = useState(false);
   const fetchDevs = useAppStore().fetchDevelopers;
@@ -63,8 +63,7 @@ const Signup = () => {
   let timeoutId: NodeJS.Timeout;
   const onSubmit = async (values: SignupFormFields) => {
     // assert wallet connection
-    if (!walletAddress)
-      return connectMetamask();
+    if (!walletAddress) return connectMetamask();
 
     // indicate that the request is taking long after 20 seconds
     requestTakingLong && setRequestTakingLong(false);
@@ -79,16 +78,18 @@ const Signup = () => {
     try {
       const { bio, devPicUrl, githubUsername, openToWork, title, username } =
         values;
-      await devRegInterface(signer!).call(
-        "register",
-        username,
-        title,
-        bio,
-        openToWork,
-        githubUsername,
-        devPicUrl,
-        { gasLimit: 500_000 }
-      );
+      await devRegInterface(signer!).call({
+        functionName: "register",
+        functionArgs: [
+          username,
+          title,
+          bio,
+          openToWork,
+          githubUsername,
+          devPicUrl,
+          { gasLimit: 500_000 },
+        ],
+      });
 
       // registeration successful
       await Swal({

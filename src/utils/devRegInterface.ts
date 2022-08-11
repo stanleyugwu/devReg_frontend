@@ -7,7 +7,7 @@ export type CallArgs = {
   /** Name of the contract function to call */
   functionName: string;
   /** Arguments to be supplied to the function to be called */
-  functionArgs?: (any | ethers.CallOverrides)[];
+  functionArgs?: any[];
   /**
    * Determines whether to skip calling the function via `staticcall` first,
    *  which would helps check if the function will fail when called.

@@ -36,7 +36,7 @@ const useAppStore = create<AppStore>((set, get) => ({
       );
 
       // get all registered devs
-      const devs = await devRegInterface(goerliProvider).call("getAllDevs");
+      const devs = await devRegInterface(goerliProvider).call({functionName:"getAllDevs"});
       set({ developers: filterFetchedDevs(devs.value) });
       return devs.value;
     } catch (error: any) {
