@@ -108,10 +108,10 @@ const Header = () => {
                 <Icon icon={faGlobe} className="mr-1" />
                 {networkName!}
                 {balance && (
-                  <p className="ml-1 text-white font-mono">
+                  <b className="ml-1 text-white font-mono">
                     {" "}
                     - <Icon icon={faCoins} /> {balance} ETH
-                  </p>
+                  </b>
                 )}
               </p>
               <p className="text-white text-center font-mono">
