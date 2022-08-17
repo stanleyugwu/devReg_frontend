@@ -1,5 +1,6 @@
 import { CustomWindow } from "../types";
 import { ethers } from "ethers";
+import contract from "../constants/contract";
 
 //extend window
 declare let window: CustomWindow;
@@ -11,7 +12,7 @@ const createSignerFromAddress = (address: string) => {
   // connected before, lets set connection state
   const metamaskProvider = new ethers.providers.Web3Provider(
     window.ethereum,
-    5
+    contract.NETWORK_ID
   );
   return metamaskProvider.getSigner(address);
 };

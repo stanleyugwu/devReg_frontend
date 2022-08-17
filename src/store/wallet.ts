@@ -86,7 +86,7 @@ const useWalletStore = create<WalletStore>((set, get) => ({
             }
           });
           window.ethereum.on("chainChanged", () => {
-            // when user changes chain it means he changed to something else not goerli.
+            // when user changes chain it means he changed to something else not the specified network ID.
             // we want to reset connection state and reload app
             if (get().walletAddress) {
               set({

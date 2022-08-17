@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import contract from "../constants/contract";
 import useWalletStore from "../store/wallet";
 import { CustomWindow } from "../types";
 
@@ -6,7 +7,7 @@ import { CustomWindow } from "../types";
 declare let window: CustomWindow;
 
 /**
- * Fetches the accoutn balance of the provided wallet addres on Goerli testnet
+ * Fetches the account balance of the provided wallet addres on specified (NETWORK_ID) network
  * asynchronously and updates wallet store balance with result.
  * Note: Fails silently
  */
@@ -14,7 +15,7 @@ const getWalletBalance = async (address: string) => {
   const updateStore = useWalletStore.getState().updateStore;
   const metamaskProvider = new ethers.providers.Web3Provider(
     window.ethereum,
-    5
+    contract.NETWORK_ID
   );
 
   try {

@@ -3,12 +3,14 @@ import { CustomWindow } from "../types";
 import { ethers } from "ethers";
 import getWalletBalance from "./getWalletBalance";
 import createSignerFromAddress from "./createSignerFromAddress";
+import contract from "../constants/contract";
+import getNetworkName from "./getNetworkName";
 
 //extend window
 declare let window: CustomWindow;
 
 /**
- * Prompts connection to metamask and to goerli testnet
+ * Prompts connection to metamask and to specified NETWORK_ID's network
  */
 const connectMetamask = async () => {
   const { hasMetamask, processing, updateStore, walletAddress } =
@@ -19,11 +21,11 @@ const connectMetamask = async () => {
   updateStore({ processing: true });
 
   try {
-    // first request user swicthes to goerli. Will throw if user refuses to switch
-    if (window.ethereum.networkVersion !== "5") {
+    // first request user swicthes to pre-set network. Will throw if user refuses to switch
+    if (window.ethereum.networkVersion !== `${contract.NETWORK_ID}`) {
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: "0x5" }],
+        params:   [{ chainId: ethers.utils.hexValue(contract.NETWORK_ID) }],
       });
     }
 
@@ -37,11 +39,11 @@ const connectMetamask = async () => {
     // set the detected connection
     const metamaskProvider = new ethers.providers.Web3Provider(
       window.ethereum,
-      5
+      contract.NETWORK_ID
     );
     updateStore({
       signer: metamaskProvider.getSigner(accounts[0]),
-      networkName: "GOERLI",
+      networkName: getNetworkName(contract.NETWORK_ID).toUpperCase(),
       walletAddress: accounts[0],
     });
 
