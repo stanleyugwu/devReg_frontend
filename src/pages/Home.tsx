@@ -57,7 +57,7 @@ const Home = () => {
             </div>
           ) : (
             developers.map((developer) => (
-              <Developer {...developer} key={developer.username} />
+              <Developer username={developer.username} key={developer.username} />
             ))
           )}
         </div>

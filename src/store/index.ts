@@ -16,6 +16,15 @@ type AppStore = {
    * Handles fetching devs on mount
    */
   fetchDevelopers(): Promise<DeveloperInfo[]>;
+  /**
+   * Updates the information of the developer with given username
+   * @param username The username of the developer to update info
+   * @param update The new info update to apply
+   */
+  updateDeveloperInfo(
+    username: string,
+    update: Partial<Omit<DeveloperInfo, "regDate" | "walletAddress">>
+  ): void;
 };
 
 const useAppStore = create<AppStore>((set, get) => ({
@@ -30,13 +39,18 @@ const useAppStore = create<AppStore>((set, get) => ({
     try {
       // lets create a fresh goerli provider for making calls to blockchain
       // we dont need a signer or `from address` since this function just sends a message call to our node
+      // Alsp we're ot using metamask provider cus user might not have it installed yet
       const goerliProvider = new ethers.providers.JsonRpcProvider(
         "https://rpc.goerli.mudit.blog/",
         5
       );
+      // const goerliProvider = new ethers.providers.JsonRpcProvider();
 
       // get all registered devs
-      const devs = await devRegInterface(goerliProvider).call({functionName:"getAllDevs"});
+      const devs = await devRegInterface(goerliProvider).call({
+        functionName: "getAllDevs"
+      });
+      
       set({ developers: filterFetchedDevs(devs.value) });
       return devs.value;
     } catch (error: any) {
@@ -44,6 +58,26 @@ const useAppStore = create<AppStore>((set, get) => ({
       console.log(error.reason);
       set({ developers: false });
     }
+  },
+  updateDeveloperInfo(username, updates) {
+    // get all devs
+    const devs = get().developers;
+    if (!devs) return;
+    
+    // create new devs array
+    const newDevs = devs.map((_dev) => {
+      if (_dev.username === username) {
+        const updated = {
+          ..._dev,
+          ...updates,
+        };
+        return updated
+      } else return _dev;
+    });
+    
+    set({
+      developers: newDevs,
+    });
   },
 }));
 
