@@ -45,12 +45,12 @@ const Home = () => {
             </div>
           ) : developers.length === 0 ? (
             <div className="mt-10">
-              <h2 className="text-2xl font-semibold">
+              <h2 className="text-xl lg:text-2xl text-center font-semibold">
                 🤷‍♂️🤷‍♀️
                 <br />
                 Looks like you're too early
               </h2>
-              <p className="text-lg">
+              <p className="text-lg text-center px-2">
                 There's no registered developer at the moment. Be the first to
                 register or come back later
               </p>

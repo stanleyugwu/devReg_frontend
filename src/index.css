@@ -9,13 +9,16 @@
 }
 
 .button {
-  @apply disabled:bg-opacity-80 p-4 px-12 shadow-md hover:bg-lime-600 bg-lime-500 text-white font-semibold rounded-lg;
+  @apply disabled:bg-opacity-80 p-3 lg:p-4 px-12 shadow-md hover:bg-lime-600 bg-lime-500 text-white font-semibold rounded-lg;
 }
 .swal-button {
   @apply p-2 px-8 bg-dark text-white font-semibold;
 }
 .swal-button:hover {
   @apply p-2 px-8 !bg-dark text-lime-500 font-semibold;
+}
+.swal-text {
+  @apply text-center;
 }
 
 body {
@@ -25,7 +28,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @apply bg-slate-50;
+  /* @apply bg-slate-50; */
+  background: linear-gradient(90deg, #00c8ff10 0%, #92fe9d2c 100%);
+  /* background: linear-gradient(90deg, #00c8ff38 0%, #92fe9d38 100%); */
 }
 
 code {
