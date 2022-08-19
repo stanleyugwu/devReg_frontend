@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "../App.css";
 import Developer from "../components/Developer";
-import { ethers } from "ethers";
-import DevRegAbi from "../abis/DevReg.json";
-import contract from "../constants/contract";
 import type { DeveloperInfo } from "../types";
+import useAppStore from "../store";
 
 const StaticLoader = (
   <div className="flex flex-col text-center items-center justify-center mt-10">
@@ -13,43 +11,15 @@ const StaticLoader = (
   </div>
 );
 
+/**
+ * Filters array of fetched developers, removing empty datasets
+ */
+export const filterFetchedDevs = (devs: DeveloperInfo[]) =>
+  devs.filter((dev) => dev.username.length);
+
 const Home = () => {
-  // one state variable for three states:
-  // undefined = loading, [] = no devs, false = error, [data] = fetched data
-  const [developers, setDevelopers] = useState<
-    DeveloperInfo[] | undefined | false
-  >(undefined);
-
-  const fetchDevs = async () => {
-    developers !== undefined && setDevelopers(undefined);
-    // we wrap everything in try catch so to be able to catch connection error
-    try {
-      // lets create a fresh goerli provider for making calls to blockchain
-      // we dont need a signer or `from address` since this function just sends a message call to our node
-      const goerliProvider = new ethers.providers.JsonRpcProvider(
-        "https://rpc.goerli.mudit.blog/",
-        5
-      );
-
-      // connected to goerli provider
-      // lets initialise our contract and after that, every call to contract methods will be
-      // made via the contract's provider i.e `goerliProvider`
-      let contractAbi: ethers.ContractInterface = DevRegAbi;
-      const myContract = new ethers.Contract(
-        contract.CONTRACT_ADDRESS,
-        contractAbi,
-        goerliProvider
-      );
-
-      // get all registered devs
-      const devs = await myContract.getAllDevs();
-      setDevelopers(devs);
-    } catch (error: any) {
-      console.log(error.message);
-      setDevelopers(false);
-      console.log("ERROR CONNECTING");
-    }
-  };
+  const developers = useAppStore((state) => state.developers);
+  const fetchDevs = useAppStore((state) => state.fetchDevelopers);
 
   useEffect(() => {
     fetchDevs();
