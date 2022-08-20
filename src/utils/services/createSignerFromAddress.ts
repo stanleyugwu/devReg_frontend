@@ -1,4 +1,5 @@
-import { CustomWindow } from "../types";
+
+import type { CustomWindow } from "../../global";
 import { ethers } from "ethers";
 import contract from "../constants/contract";
 

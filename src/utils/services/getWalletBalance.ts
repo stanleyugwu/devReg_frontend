@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
+import type { CustomWindow } from "../../global";
+import useWalletStore from "../../store/wallet";
 import contract from "../constants/contract";
-import useWalletStore from "../store/wallet";
-import { CustomWindow } from "../types";
 
 //extend window
 declare let window: CustomWindow;

@@ -1,8 +1,8 @@
 import create from "zustand";
-import { DeveloperInfo } from "../types";
 import { ethers } from "ethers";
-import devRegInterface from "../utils/devRegInterface";
-import { filterFetchedDevs } from "../pages/Home";
+import devRegInterface from "../utils/services/devRegInterface";
+import { filterFetchedDevs } from "../pages/home/Home";
+import { DeveloperInfo } from "../pages/home/components/types";
 
 /**
  * App store type

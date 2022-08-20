@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import DevRegAbi from "../abis/DevReg.json";
+import DevRegAbi from "../constants/abis/DevReg.json";
 import contract from "../constants/contract";
 
 /** Parameter type of call function */

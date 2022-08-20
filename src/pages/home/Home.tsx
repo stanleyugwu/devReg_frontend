@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import "../App.css";
-import Developer from "../components/Developer";
-import type { DeveloperInfo } from "../types";
-import useAppStore from "../store";
+import Developer from "./components/Developer";
+import useAppStore from "../../store";
+import { DeveloperInfo } from "./components/types";
 
 const StaticLoader = (
   <div className="flex flex-col text-center items-center justify-center mt-10">

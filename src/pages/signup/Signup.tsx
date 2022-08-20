@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ethers } from "ethers";
-import arrow from "../images/arrow.svg";
-import laptopImg from "../images/laptop.png";
-import { SignupFormFields } from "../types";
-import devRegInterface from "../utils/devRegInterface";
+import arrow from "./images/arrow.svg";
+import laptopImg from "./images/laptop.png";
 import Swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
-import useAppStore from "../store";
-import useWalletStore from "../store/wallet";
-import connectMetamask from "../utils/connectMetamask";
+import useAppStore from "../../store";
+import useWalletStore from "../../store/wallet";
+import connectMetamask from "../../utils/services/connectMetamask";
+import type { SignupFormFields } from "./types";
+import devRegInterface from "../../utils/services/devRegInterface";
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string()

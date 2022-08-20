@@ -1,7 +1,7 @@
 import createSignerFromAddress from "./createSignerFromAddress";
-import type { CustomWindow } from "../types";
-import contract from "../constants/contract";
+import type { CustomWindow } from "../../global";
 import getNetworkName from "./getNetworkName";
+import contract from "../constants/contract";
 
 //extend window
 declare let window: CustomWindow;

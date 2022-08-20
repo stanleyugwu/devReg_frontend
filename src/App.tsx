@@ -1,8 +1,8 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Header from "./components/Header";
-import Home from "./pages/Home";
-import Signup from "./pages/Signup";
+import Header from "./components/header";
+import Home from "./pages/home/";
+import Signup from "./pages/signup";
 
 const App = () => {
   return (

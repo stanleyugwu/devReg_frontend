@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import formatAddress from "../utils/formatWalletAddress";
+import formatAddress from "../../utils/services/formatWalletAddress";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import useWalletStore from "../store/wallet";
-import connectMetamask from "../utils/connectMetamask";
+import useWalletStore from "../../store/wallet";
+import connectMetamask from "../../utils/services/connectMetamask";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { faCoins, faGlobe } from "@fortawesome/free-solid-svg-icons";
 

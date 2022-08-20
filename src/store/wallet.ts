@@ -1,10 +1,10 @@
 import create from "zustand";
 import { ethers } from "ethers";
 import detectEthereumProvider from "@metamask/detect-provider";
-import { CustomWindow } from "../types";
-import getWalletBalance from "../utils/getWalletBalance";
-import checkPreviousWalletConnection from "../utils/checkPreviousWalletConnection";
-import createSignerFromAddress from "../utils/createSignerFromAddress";
+import { CustomWindow } from "../global";
+import getWalletBalance from "../utils/services/getWalletBalance";
+import checkPreviousWalletConnection from "../utils/services/checkPreviousWalletConnection";
+import createSignerFromAddress from "../utils/services/createSignerFromAddress";
 
 //extend window
 declare let window: CustomWindow;

@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { ethers } from "ethers";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import {
   faAngleRight,
@@ -8,25 +7,13 @@ import {
   faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
-import github from "../images/github.svg";
-import devRegInterface from "../utils/devRegInterface";
-import useWalletStore from "../store/wallet";
-import connectMetamask from "../utils/connectMetamask";
+import github from "./images/github.svg";
+import devRegInterface from "../../../utils/services/devRegInterface";
+import useWalletStore from "../../../store/wallet";
 import Swal from "sweetalert";
-import useAppStore from "../store";
-import { DeveloperInfo } from "../types";
-
-/**
- * We're not passing full developer info to this component, just the username.
- * We'll use the username to retreive the full info from the store
- */
-export type DeveloperProps = {
-  /**
-   * Username of the developer. The username will be used to retreive the developer's info
-   * from the store.
-   */
-  username: string;
-};
+import useAppStore from "../../../store";
+import { DeveloperInfo, DeveloperProps } from "./types";
+import connectMetamask from "../../../utils/services/connectMetamask";
 
 /**
  * Renders a UI card for each registered developer.

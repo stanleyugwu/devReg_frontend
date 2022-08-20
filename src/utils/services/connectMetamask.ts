@@ -1,10 +1,10 @@
-import useWalletStore from "../store/wallet";
-import { CustomWindow } from "../types";
+import useWalletStore from "../../store/wallet";
+import { CustomWindow } from "../../global";
 import { ethers } from "ethers";
 import getWalletBalance from "./getWalletBalance";
 import createSignerFromAddress from "./createSignerFromAddress";
-import contract from "../constants/contract";
 import getNetworkName from "./getNetworkName";
+import contract from "../constants/contract";
 
 //extend window
 declare let window: CustomWindow;
